@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::Error,
-    utils::{check_exists, hash_password},
+    utils::{password::hash_password, user::check_exists},
 };
 
 #[derive(Deserialize)]
@@ -25,7 +25,7 @@ pub struct RegisterData {
 )]
 pub async fn account_register(
     pool: web::Data<PgPool>,
-    data: web::Json<RegisterData>,
+    data: web::Form<RegisterData>,
 ) -> Result<HttpResponse, Error> {
     let exists = check_exists(&pool, &data.email).await;
 

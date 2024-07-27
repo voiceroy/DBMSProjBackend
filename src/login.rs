@@ -4,8 +4,10 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use tracing::error;
 
-use crate::utils::verify_password;
-use crate::{errors::Error, utils::check_exists, utils::TypedSession};
+use crate::{
+    errors::Error,
+    utils::{password::verify_password, session::TypedSession, user::check_exists},
+};
 
 #[derive(Deserialize)]
 pub struct LoginData {
@@ -32,7 +34,7 @@ pub async fn account_login(
 
     // We already know that the user exists, hence unwrap
     let credentials = get_stored_credentials(&data, &pool).await?;
-    match check_password(data.into_inner(), credentials.1).await? {
+    match check_password(&data.into_inner(), credentials.1).await? {
         true => {
             session.renew();
             session.insert_user_id(credentials.0).map_err(|err| {
@@ -63,7 +65,7 @@ async fn get_stored_credentials(
 }
 
 #[tracing::instrument(name = "Checking against PHC", skip(data))]
-async fn check_password(data: LoginData, password_hash: String) -> Result<bool, Error> {
+async fn check_password(data: &LoginData, password_hash: String) -> Result<bool, Error> {
     verify_password(data.password.as_bytes(), &password_hash).map_err(|err| {
         error!("{err}");
         std::convert::Into::<Error>::into(anyhow!("Password Error"))

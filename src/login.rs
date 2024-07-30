@@ -5,7 +5,7 @@ use sqlx::PgPool;
 use tracing::error;
 
 use crate::{
-    errors::Error,
+    errors::ProjError,
     utils::{password::verify_password, session::TypedSession, user::check_exists},
 };
 
@@ -25,7 +25,7 @@ pub async fn account_login(
     pool: web::Data<PgPool>,
     data: web::Json<LoginData>,
     session: TypedSession,
-) -> Result<HttpResponse, Error> {
+) -> Result<HttpResponse, ProjError> {
     let exists = check_exists(&pool, &data.email).await;
 
     if !exists {
@@ -39,7 +39,7 @@ pub async fn account_login(
             session.renew();
             session.insert_user_id(credentials.0).map_err(|err| {
                 error!("{err}");
-                std::convert::Into::<Error>::into(anyhow!(err))
+                std::convert::Into::<ProjError>::into(anyhow!(err))
             })?;
             Ok(HttpResponse::Ok().finish())
         }
@@ -51,7 +51,7 @@ pub async fn account_login(
 async fn get_stored_credentials(
     data: &LoginData,
     pool: &PgPool,
-) -> Result<(uuid::Uuid, String), Error> {
+) -> Result<(uuid::Uuid, String), ProjError> {
     match sqlx::query!(
         "SELECT customer_id, password FROM customer WHERE email = $1",
         data.email
@@ -65,9 +65,9 @@ async fn get_stored_credentials(
 }
 
 #[tracing::instrument(name = "Checking against PHC", skip(data))]
-async fn check_password(data: &LoginData, password_hash: String) -> Result<bool, Error> {
+async fn check_password(data: &LoginData, password_hash: String) -> Result<bool, ProjError> {
     verify_password(data.password.as_bytes(), &password_hash).map_err(|err| {
         error!("{err}");
-        std::convert::Into::<Error>::into(anyhow!("Password Error"))
+        std::convert::Into::<ProjError>::into(anyhow!("Password Error"))
     })
 }

@@ -3,7 +3,9 @@ CREATE TYPE order_status AS ENUM ('cancelled', 'placed', 'dispatched', 'delivere
 CREATE TABLE customer_order
 (
     order_id      UUID PRIMARY KEY,
+    customer_id   UUID REFERENCES customer(customer_id),
     order_time    TIMESTAMPTZ  NOT NULL,
     delivery_time TIMESTAMPTZ  NOT NULL,
-    order_status  order_status NOT NULL
+    status        order_status NOT NULL,
+    payment_id    UUID REFERENCES payment(payment_id)
 );

@@ -8,10 +8,18 @@ actix-web = "4.8.0"
 env_logger = "0.11.3"
 serde = "1.0.204"
 uuid = { version = "1.10.0", features = ["v4", "serde", "std"] }
-sqlx = { version = "0.7.4", features = ["runtime-tokio", "postgres", "uuid"] }
+sqlx = { version = "0.8", features = [
+  "runtime-tokio",
+  "postgres",
+  "uuid",
+  "chrono",
+] }
 actix-session = { version = "0.9.0", features = ["cookie-session"] }
 anyhow = "1.0.86"
 argon2 = "0.5.3"
 tracing-actix-web = "0.7.11"
 tracing = "0.1.40"
 thiserror = "1.0.63"
+chrono = "0.4.38"
+rand = "0.8.5"
+actix-cors = "0.7.0"

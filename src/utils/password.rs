@@ -1,4 +1,4 @@
-use crate::errors::Error;
+use crate::errors::ProjError;
 use anyhow::anyhow;
 use argon2::PasswordHasher;
 use argon2::{
@@ -14,7 +14,7 @@ pub fn hash_password(password: &[u8]) -> String {
     password_hash
 }
 
-pub fn verify_password(password: &[u8], password_hash: &str) -> Result<bool, Error> {
+pub fn verify_password(password: &[u8], password_hash: &str) -> Result<bool, ProjError> {
     let parsed_hash = match PasswordHash::new(password_hash) {
         Ok(hash) => hash,
         Err(_) => {

@@ -1,14 +1,20 @@
 pub mod errors;
+pub mod get_items;
 pub mod login;
+pub mod logout;
+pub mod place_order;
 pub mod register;
 pub mod utils;
 
 use std::io::Error;
 
+use actix_cors::Cors;
 use actix_session::{storage::CookieSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, web, App, HttpServer};
 use env_logger::Env;
+use get_items::items;
 use login::account_login;
+use place_order::place;
 use register::account_register;
 use sqlx::PgPool;
 use tracing::error;
@@ -43,6 +49,13 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header()
+                    .max_age(3600),
+            )
             .wrap(TracingLogger::default())
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[1; 64]))
@@ -51,6 +64,8 @@ async fn main() -> std::io::Result<()> {
             )
             .service(account_login)
             .service(account_register)
+            .service(items)
+            .service(place)
             .app_data(pool.clone())
     })
     .bind(("0.0.0.0", 8080))?

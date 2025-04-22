@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO customer (customer_id, name, email, password) VALUES ($1, $2, $3, $4)",
+  "query": "INSERT INTO customer (customer_id, name, email, password, address) VALUES ($1, $2, $3, $4, $5)",
   "describe": {
     "columns": [],
     "parameters": {
@@ -8,10 +8,11 @@
         "Uuid",
         "Varchar",
         "Varchar",
+        "Varchar",
         "Varchar"
       ]
     },
     "nullable": []
   },
-  "hash": "054c725f9c689d3039f7431249d5b86c4b7c3b0156cd193a3d637a8a8802df13"
+  "hash": "3bfcd986df082a8ab25ee31418f9f70487b41645332ccb2ad23b9e3f6cf2de54"
 }

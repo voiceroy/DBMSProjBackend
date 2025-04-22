@@ -6,6 +6,7 @@ pub mod place_order;
 pub mod register;
 pub mod utils;
 
+use std::env;
 use std::io::Error;
 
 use actix_cors::Cors;
@@ -24,17 +25,21 @@ use tracing_actix_web::TracingLogger;
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    let pool = web::Data::new(
-        PgPool::connect("postgres://postgres:abcd@localhost/postgres")
-            .await
-            .map_err(|err| {
-                error!("{err}");
-                Error::new(
-                    std::io::ErrorKind::NotConnected,
-                    "Cannot Connect To Database",
-                )
-            })?,
-    );
+    let database_url = match env::var("DATABASE_URL") {
+        Ok(url) => url,
+        Err(err) => {
+            error!("Database url not valid: {err}");
+            panic!("Failed to read DATABASE_URL");
+        }
+    };
+
+    let pool = web::Data::new(PgPool::connect(&database_url).await.map_err(|err| {
+        error!("{err}");
+        Error::new(
+            std::io::ErrorKind::NotConnected,
+            "Cannot Connect To Database",
+        )
+    })?);
 
     sqlx::migrate!("./migrations")
         .run(&**pool)

@@ -1,0 +1,32 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT non_pizza_id, name, price FROM non_pizza",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "non_pizza_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "price",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "41d1f7d5e1d464ee3273865a16ccc8cab34c0e1276dec13ebec1ece57f0be89b"
+}
